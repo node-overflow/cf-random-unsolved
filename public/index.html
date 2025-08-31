@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CF Random Unsolved</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+  <canvas id="starCanvas" aria-hidden="true"></canvas>
+
+  <div class="nebula"></div>
+
+  <main class="container">
+    <h1>📊 Codeforces Random Unsolved</h1>
+    <p class="sub">Pick tags + rating, enter handle → get a random problem you haven't solved.</p>
+
+    <form id="filterForm" class="glass">
+      <div class="row">
+        <label for="handle">Codeforces Handle</label>
+        <input id="handle" name="handle" placeholder="tourist" required>
+      </div>
+
+      <div class="field">
+        <label>Tags:</label>
+        <div id="tagsBox" class="tags-box">Loading tags…</div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label for="min">Min Rating</label>
+          <input id="min" name="min" type="number" min="800" max="3500" step="100" value="800">
+        </div>
+        <div>
+          <label for="max">Max Rating</label>
+          <input id="max" name="max" type="number" min="800" max="3500" step="100" value="1000">
+        </div>
+      </div>
+
+      <button id="goBtn" type="submit">Get Random Problem</button>
+    </form>
+
+    <section id="result" class="card glass hidden">
+      <h2 id="probTitle"></h2>
+      <p id="probMeta"></p>
+      <p id="probTags"></p>
+      <a id="probLink" class="btn" target="_blank" rel="noopener">Open on Codeforces</a>
+      <button id="againBtn" class="ghost">Another</button>
+    </section>
+
+    <section id="status" class="status"></section>
+  </main>
+
+  <footer>
+    <span>Made with Codeforces API. No sign-in required.</span>
+  </footer>
+
+  <script src="stars.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+
+</html>
