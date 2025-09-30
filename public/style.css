@@ -152,34 +152,37 @@ select:focus {
 }
 
 .tag-item:hover {
-  background: linear-gradient(135deg, #4ab8ff, #00ffc8);
-  color: #0b0f1a;
-  box-shadow: 0 4px 8px rgba(0, 255, 200, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateY(-0.5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tag-item.selected {
-  background: linear-gradient(135deg, #4ab8ff, #00ffc8);
+  background: linear-gradient(135deg, #5a9fff 0%, #4dd7c8 100%);
   color: #0b0f1a;
+  box-shadow: 0 2px 6px rgba(77, 215, 200, 0.2);
 }
 
 button,
 .btn {
-  background: linear-gradient(135deg, #4ab8ff, #00ffc8);
+  background: linear-gradient(135deg, #5a9fff 0%, #4dd7c8 100%);
   color: #0b0f1a;
-  font-weight: 700;
+  font-weight: 600;
   border: none;
-  border-radius: 16px;
-  padding: 12px 18px;
+  border-radius: 12px;
+  padding: 10px 16px;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
   font-size: 0.95rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition: box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 button:hover,
 .btn:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(77, 215, 200, 0.2);
 }
 
 button:disabled {
@@ -188,8 +191,8 @@ button:disabled {
 }
 
 .ghost {
-  background: transparent;
-  color: #f6f8fa;
+  background: #17192d;
+  color: #f1f3f5;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-left: 8px;
 }
@@ -235,4 +238,152 @@ footer {
   font-size: 13px;
   text-align: center;
   opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+  .container {
+    margin: 20px auto;
+    padding: 0 12px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .sub {
+    font-size: 0.9rem;
+  }
+
+  form {
+    gap: 12px;
+  }
+
+  .row.two {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  input,
+  select,
+  #min,
+  #max,
+  button,
+  .btn,
+  .ghost {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 10px;
+  }
+
+  .tags-box {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .glass {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  footer {
+    font-size: 12px;
+    margin: 24px auto 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .sub {
+    font-size: 0.95rem;
+  }
+
+  .row.two {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .glass {
+    padding: 18px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  button,
+  .btn,
+  .ghost {
+    font-size: 0.95rem;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    max-width: 720px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .sub {
+    font-size: 1rem;
+  }
+
+  form {
+    gap: 14px;
+  }
+
+  .row.two {
+    gap: 14px;
+  }
+
+  input,
+  select,
+  #min,
+  #max {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .tags-box {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tag-item {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  button,
+  .btn,
+  .ghost {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  #result {
+    text-align: center;
+  }
+
+  #probLink,
+  #againBtn {
+    width: 100%;
+    margin: 6px 0;
+  }
 }
