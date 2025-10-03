@@ -224,6 +224,33 @@ button:disabled {
   color: #00ffc8;
 }
 
+#probTitle {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+#probMeta {
+  margin: 0 0 6px;
+  color: #c2ccd6;
+}
+
+#probTags {
+  margin: 8px 0 16px;
+  color: #00ffc8;
+}
+
+#probSolved {
+  margin: 0 0 12px;
+  color: #c0acdde8;
+  font-style: normal;
+  font-size: 0.95rem;
+}
+
+.user-icon {
+  color: #50327d !important;
+}
+
 .status {
   margin-top: 14px;
   min-height: 20px;

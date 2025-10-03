@@ -31,7 +31,16 @@ const ensureProblemCache = async () => {
     if (now - problemCache.lastFetched < 30 * 60 * 1000 && problemCache.problems.length) return;
     const result = await cfGet("/problemset.problems");
     const problems = result.problems || [];
-    const filtered = problems.filter(p => Number.isInteger(p.rating) && p.contestId && p.index && Array.isArray(p.tags));
+    const stats = result.problemStatistics || [];
+
+    const statMap = new Map(stats.map(s => [`${s.contestId}-${s.index}`, s.solvedCount]));
+
+    const filtered = problems
+        .filter(p => Number.isInteger(p.rating) && p.contestId && p.index && Array.isArray(p.tags))
+        .map(p => ({
+            ...p,
+            solvedCount: statMap.get(`${p.contestId}-${p.index}`) || 0
+        }));
     const tagSet = new Set();
     filtered.forEach(p => p.tags.forEach(t => tagSet.add(t)));
     problemCache = { lastFetched: now, problems: filtered, tags: Array.from(tagSet).sort((a, b) => a.localeCompare(b)) };
@@ -110,7 +119,15 @@ app.get("/api/random-problem", async (req, res) => {
         const rnd = Math.floor(Math.random() * candidates.length);
         const prob = candidates[rnd];
         const url = `https://codeforces.com/contest/${prob.contestId}/problem/${prob.index}`;
-        res.json({ contestId: prob.contestId, index: prob.index, name: prob.name, rating: prob.rating, tags: prob.tags, url });
+        res.json({
+            contestId: prob.contestId,
+            index: prob.index,
+            name: prob.name,
+            rating: prob.rating,
+            tags: prob.tags,
+            url,
+            solvedCount: prob.solvedCount,
+        });
     } catch (e) {
         const code = e.code || 500;
         res.status(code).json({ error: e.message || "Unknown error" });

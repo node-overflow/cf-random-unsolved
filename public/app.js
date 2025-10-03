@@ -8,6 +8,7 @@ const resultCard = $("#result");
 const probTitle = $("#probTitle");
 const probMeta = $("#probMeta");
 const probTags = $("#probTags");
+const probSolved = $("#probSolved");
 const probLink = $("#probLink");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
@@ -65,6 +66,7 @@ const fetchRandom = async query => {
     probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
     probMeta.textContent = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
     probTags.textContent = `Tags: ${data.tags.join(", ")}`;
+    probSolved.innerHTML = `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
     probLink.href = data.url;
 
     resultCard.classList.remove("hidden");
