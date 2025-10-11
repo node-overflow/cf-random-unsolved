@@ -7,7 +7,8 @@
   <title>CF Random Unsolved</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pap6Y3..." crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 
 <body>
@@ -17,7 +18,7 @@
 
   <main class="container">
     <h1>📊 CF Random Unsolved 📊</h1>
-    <p class="sub">Pick tags + rating, enter handle → get a random problem you haven't solved.</p>
+    <p class="sub">Enter handle, pick tags + rating → get a random problem you haven't solved.</p>
 
     <form id="filterForm" class="glass">
       <div class="row">
@@ -41,7 +42,8 @@
         </div>
       </div>
 
-      <button id="goBtn" type="submit">Get Random Problem</button>
+      <button id="goBtn" type="submit" class="btn">Get Random Problem &nbsp; <i
+          class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </form>
 
     <section id="result" class="card glass hidden">
@@ -49,8 +51,9 @@
       <p id="probMeta"></p>
       <p id="probTags"></p>
       <p id="probSolved"></p>
-      <a id="probLink" class="btn" target="_blank" rel="noopener">Open on Codeforces</a>
-      <button id="againBtn" class="ghost">Another</button>
+      <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open on Codeforces &nbsp; <i
+          class="fa-solid fa-chart-simple cf_color"></i></a>
+      <button id="againBtn" class="btn">Another &nbsp; <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </section>
 
     <section id="status" class="status"></section>
