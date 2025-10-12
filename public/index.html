@@ -16,8 +16,21 @@
 
   <div class="nebula"></div>
 
+  <div class="social-panel">
+    <a href="https://github.com/node-overflow/cf-random-unsolved" target="_blank" rel="noopener" aria-label="GitHub">
+      <i class="fa-brands fa-github"></i>
+    </a>
+    <a href="https://x.com/piyush_cpp" target="_blank" rel="noopener" aria-label="X (Twitter)">
+      <i class="fa-brands fa-twitter"></i>
+    </a>
+    <a href="https://mail.google.com/mail/?view=cm&to=nodexoverflow@gmail.com" target="_blank" rel="noopener"
+      aria-label="Email">
+      <i class="fa-solid fa-envelope"></i>
+    </a>
+  </div>
+
   <main class="container">
-    <h1>📊 CF Random Unsolved 📊</h1>
+    <h1>📊 <span class="h1-text">CF Random Unsolved</span> 📊</h1>
     <p class="sub">Enter handle, pick tags + rating → get a random problem you haven't solved.</p>
 
     <form id="filterForm" class="glass">
@@ -31,7 +44,7 @@
         <div id="tagsBox" class="tags-box">Loading tags…</div>
       </div>
 
-      <div class="row two">
+      <div class="row two rating-div" style="gap: 25rem;">
         <div>
           <label for="min">Min Rating</label>
           <input id="min" name="min" type="number" min="800" max="3500" step="100" value="900">
@@ -51,8 +64,8 @@
       <p id="probMeta"></p>
       <p id="probTags"></p>
       <p id="probSolved"></p>
-      <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open on Codeforces &nbsp; <i
-          class="fa-solid fa-chart-simple cf_color"></i></a>
+      <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open
+        on Codeforces &nbsp; <i class="fa-solid fa-chart-simple cf_color"></i></a>
       <button id="againBtn" class="btn">Another &nbsp; <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </section>
 
