@@ -1,6 +1,10 @@
 body {
-  background: #fdfdfd;
+  background: #00203b;
   color: #1e1e1e;
+}
+
+#starCanvas {
+  display: none;
 }
 
 .glass {
@@ -77,6 +81,13 @@ select:focus {
 #max,
 #min {
   color: #444444 !important;
+}
+
+.cf_color {
+  background: linear-gradient(135deg, #075eab, #0862af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
 }
 
 .status {
