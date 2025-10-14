@@ -60,6 +60,15 @@ body::-webkit-scrollbar-thumb:hover {
   pointer-events: none;
 }
 
+#toggleThemeBtn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10000;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+}
+
 .social-panel {
   position: fixed;
   top: 50%;
@@ -378,8 +387,22 @@ footer {
 }
 
 @media (max-width: 768px) {
+  #toggleThemeBtn {
+    width: fit-content;
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
   .social-panel {
-    display: none;
+    display: flex;
+    flex-direction: row;
+    top: 8px;
+    left: 8px;
+    transform: none;
+    gap: 18px;
+    z-index: 9999;
   }
 
   h1 {

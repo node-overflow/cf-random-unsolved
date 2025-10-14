@@ -12,6 +12,9 @@ const probSolved = $("#probSolved");
 const probLink = $("#probLink");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
+const toggleBtn = document.getElementById("toggleThemeBtn");
+
+let lightMode = false;
 
 let lastQuery = null;
 
@@ -99,3 +102,20 @@ form.addEventListener("submit", ev => {
 againBtn.addEventListener("click", () => { if (lastQuery) fetchRandom(lastQuery); });
 
 loadTags();
+
+toggleBtn.addEventListener("click", () => {
+  if (!lightMode) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "light-mode.css";
+    link.id = "lightModeCSS";
+    document.head.appendChild(link);
+    lightMode = true;
+    toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+  } else {
+    const link = document.getElementById("lightModeCSS");
+    if (link) link.remove();
+    lightMode = false;
+    toggleBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
+  }
+});
