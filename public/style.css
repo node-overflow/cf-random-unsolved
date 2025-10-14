@@ -327,10 +327,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .social-panel {
-    display: none;
-  }
-
   .container {
     margin: 20px auto;
     padding: 0 12px;
@@ -388,14 +384,16 @@ footer {
 
 @media (max-width: 768px) {
   #toggleThemeBtn {
-    width: fit-content;
+    position: absolute;
     top: 8px;
     right: 8px;
+    width: fit-content;
     padding: 6px 10px;
     font-size: 0.85rem;
   }
 
   .social-panel {
+    position: relative;
     display: flex;
     flex-direction: row;
     top: 8px;
