@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "assets")));
 
 const CF_BASE = "https://codeforces.com/api";
+const userCache = new Map();
 let problemCache = { lastFetched: 0, problems: [], tags: [] };
 
 const cfGet = async (endpoint) => {
@@ -47,23 +48,17 @@ const ensureProblemCache = async () => {
 };
 
 const getSolvedSet = async (handle) => {
-    try {
-        const submissions = await cfGet(`/user.status?handle=${encodeURIComponent(handle)}&from=1&count=100000`);
-        const solved = new Set();
-        submissions.forEach(sub => {
-            if (sub.verdict === "OK" && sub.problem && sub.problem.contestId && sub.problem.index)
-                solved.add(`${sub.problem.contestId}-${sub.problem.index}`);
-        });
-        return solved;
-    } catch (e) {
-        const msg = e.message || "";
-        if (/HTTP 400/i.test(msg) || /handles should satisfy/i.test(msg) || /not found/i.test(msg)) {
-            const err = new Error(`User '${handle}' not found on Codeforces`);
-            err.code = 404;
-            throw err;
-        }
-        throw e;
-    }
+    const now = Date.now();
+    const cache = userCache.get(handle);
+    if (cache && now - cache.lastFetched < 5 * 60 * 1000) return cache.solvedSet;
+
+    const submissions = await cfGet(`/user.status?handle=${encodeURIComponent(handle)}&from=1&count=100000`);
+    const solved = new Set(submissions
+        .filter(sub => sub.verdict === "OK" && sub.problem?.contestId && sub.problem?.index)
+        .map(sub => `${sub.problem.contestId}-${sub.problem.index}`));
+
+    userCache.set(handle, { lastFetched: now, solvedSet: solved });
+    return solved;
 };
 
 const matchesTags = (problemTags, selected, mode) => {
@@ -137,5 +132,7 @@ app.get("/api/random-problem", async (req, res) => {
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+ensureProblemCache().then(() => console.log("Preload problem tags"));
 
 process.on("unhandledRejection", err => console.error("UnhandledRejection:", err));
