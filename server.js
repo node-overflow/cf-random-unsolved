@@ -129,6 +129,26 @@ app.get("/api/random-problem", async (req, res) => {
     }
 });
 
+app.get("/api/user-avatar", async (req, res) => {
+    try {
+        const handle = (req.query.handle || "").trim();
+        if (!handle) return res.status(400).json({ error: "Missing handle query param" });
+
+        const userData = await cfGet(`/user.info?handles=${encodeURIComponent(handle)}`);
+        if (!userData?.length) return res.status(404).json({ error: "User not found" });
+
+        const user = userData[0];
+
+        const avatarURL = user.titlePhoto?.startsWith("http")
+            ? user.titlePhoto
+            : `https:${user.titlePhoto}`;
+
+        res.json({ handle: user.handle, avatarURL });
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Failed to fetch avatar" });
+    }
+});
+
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

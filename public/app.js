@@ -1,3 +1,6 @@
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* VARIABLES */
+
 const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
 
@@ -12,15 +15,33 @@ const probSolved = $("#probSolved");
 const probLink = $("#probLink");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
-const toggleBtn = document.getElementById("toggleThemeBtn");
-const lightLink = document.getElementById("lightModeCSS");
+const toggleBtn = $("#toggleThemeBtn");
+const lightLink = $("#lightModeCSS");
+const avatarDiv = $(".avatar");
+const handleInput = $("#handle");
 
 let lightMode = false;
 let lastQuery = null;
 
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* SET STATUS WHILE FETCHING PROBLEMS */
+
 const setStatus = msg => {
   if (statusBox) statusBox.textContent = msg || "";
 };
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* TAGS */
 
 const loadTags = async () => {
   try {
@@ -48,6 +69,16 @@ const loadTags = async () => {
 };
 
 const getSelectedTags = () => $$(".tag-item.selected").map(el => el.dataset.tag);
+
+loadTags();
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* FETCH PROBLEMS */
 
 const fetchRandom = async query => {
   const params = new URLSearchParams();
@@ -84,6 +115,14 @@ const fetchRandom = async query => {
   }
 };
 
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* SUBMIT BUTTON FUNCIONALITY */
+
 form.addEventListener("submit", ev => {
   ev.preventDefault();
   const handle = $("#handle").value.trim();
@@ -99,14 +138,92 @@ form.addEventListener("submit", ev => {
   fetchRandom(lastQuery);
 });
 
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* AGAIN BUTTON FUCNTIONALITY */
+
 againBtn.addEventListener("click", () => { if (lastQuery) fetchRandom(lastQuery); });
 
-loadTags();
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* AVATAR */
+
+const loadAvatar = async (handle) => {
+  avatarDiv.style.backgroundImage = "url('/assets/avatar-placeholder.png')";
+  avatarDiv.style.opacity = "0.6";
+
+  try {
+    const res = await fetch(`/api/user-avatar?handle=${handle}`);
+    const data = await res.json();
+
+    if (data.avatarURL) {
+      const img = new Image();
+      img.onload = () => {
+        avatarDiv.style.transition = "background-image 0.4s ease, opacity 0.4s ease";
+        avatarDiv.style.backgroundImage = `url('${data.avatarURL}')`;
+        avatarDiv.style.opacity = "1";
+      };
+      img.onerror = () => {
+        avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
+        avatarDiv.style.opacity = "1";
+      };
+      img.src = data.avatarURL;
+    } else {
+      avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
+      avatarDiv.style.opacity = "1";
+    }
+  } catch (err) {
+    avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
+    avatarDiv.style.opacity = "1";
+    console.error("Failed to load avatar:", err);
+  }
+};
+
+const handleChange = () => {
+  const handle = handleInput.value.trim();
+  if (!handle) {
+    avatarDiv.style.backgroundImage = "url('/assets/avatar-placeholder.svg')";
+    avatarDiv.style.opacity = "0.6";
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9_]+$/.test(handle)) return;
+
+  loadAvatar(handle);
+};
+
+avatarDiv.addEventListener("click", () => {
+  const handle = handleInput.value.trim();
+  if (!handle) return;
+  window.open(`https://codeforces.com/profile/${handle}`, "_blank");
+});
+
+handleInput.addEventListener("input", handleChange);
+
+if (handleInput.value.trim()) {
+  handleChange();
+}
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------- */
+/* THEME TOGGLE BUTTON */
 
 toggleBtn.addEventListener("click", () => {
   lightMode = !lightMode;
 
-  lightLink.disabled = !lightMode; // only toggle light-mode overrides
+  lightLink.disabled = !lightMode;
   toggleBtn.innerHTML = lightMode
     ? `<i class="fa-solid fa-sun"></i>`
     : `<i class="fa-solid fa-moon"></i>`;
@@ -114,9 +231,10 @@ toggleBtn.addEventListener("click", () => {
   localStorage.setItem("theme", lightMode ? "light" : "dark");
 });
 
-// Load saved theme instantly on startup
 if (localStorage.getItem("theme") === "light") {
   lightLink.disabled = false;
   lightMode = true;
   toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
 }
+
+/* ------------------------------------------------------------------------------------------------------------------- */

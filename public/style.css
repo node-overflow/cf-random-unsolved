@@ -69,6 +69,23 @@ body::-webkit-scrollbar-thumb:hover {
   font-size: 0.95rem;
 }
 
+.avatar {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: url("/default-avatar.png") center/cover no-repeat;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.avatar:hover {
+  box-shadow: 0 8px 20px rgba(238, 236, 236, 0.181);
+  filter: brightness(1.05);
+}
+
 .social-panel {
   position: fixed;
   top: 50%;
@@ -390,6 +407,13 @@ footer {
     width: fit-content;
     padding: 6px 10px;
     font-size: 0.85rem;
+  }
+
+  .avatar {
+    display: none;
+    /* position: absolute;
+    top: 8px;
+    left: 14rem; */
   }
 
   .social-panel {
