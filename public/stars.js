@@ -16,20 +16,20 @@
 
     const makeStars = () => {
         stars = [];
-        const count = Math.floor((w * h) / 6000); // fewer stars for subtlety
+        const count = Math.floor((w * h) / 6000);
         for (let i = 0; i < count; i++) {
             const tints = [
-                [200, 200, 220], // soft white
-                [180, 190, 220], // gentle blue
-                [220, 220, 200], // soft warm
+                [200, 200, 220],
+                [180, 190, 220],
+                [220, 220, 200],
             ];
             const c = tints[Math.floor(Math.random() * tints.length)];
             stars.push({
                 x: Math.random() * w,
                 y: Math.random() * h,
-                r: Math.random() * 1.2 + 0.2, // smaller radius for subtlety
+                r: Math.random() * 1.2 + 0.2,
                 tw: Math.random() * Math.PI * 2,
-                vx: (Math.random() - 0.5) * 0.02, // slower movement
+                vx: (Math.random() - 0.5) * 0.02,
                 vy: (Math.random() - 0.5) * 0.02,
                 color: c
             });
@@ -37,13 +37,12 @@
     };
 
     const draw = () => {
-        // very dark, near black background but softer
         ctx.fillStyle = "rgba(10,10,20,0.85)";
         ctx.fillRect(0, 0, w, h);
 
         for (const s of stars) {
-            s.tw += 0.01; // slower twinkle
-            const alpha = 0.2 + 0.4 * Math.sin(s.tw); // subtle twinkle
+            s.tw += 0.01;
+            const alpha = 0.2 + 0.4 * Math.sin(s.tw);
             s.x += s.vx;
             s.y += s.vy;
             if (s.x < 0) s.x = w;

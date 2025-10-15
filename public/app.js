@@ -13,9 +13,9 @@ const probLink = $("#probLink");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
 const toggleBtn = document.getElementById("toggleThemeBtn");
+const lightLink = document.getElementById("lightModeCSS");
 
 let lightMode = false;
-
 let lastQuery = null;
 
 const setStatus = msg => {
@@ -104,18 +104,19 @@ againBtn.addEventListener("click", () => { if (lastQuery) fetchRandom(lastQuery)
 loadTags();
 
 toggleBtn.addEventListener("click", () => {
-  if (!lightMode) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "light-mode.css";
-    link.id = "lightModeCSS";
-    document.head.appendChild(link);
-    lightMode = true;
-    toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
-  } else {
-    const link = document.getElementById("lightModeCSS");
-    if (link) link.remove();
-    lightMode = false;
-    toggleBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
-  }
+  lightMode = !lightMode;
+
+  lightLink.disabled = !lightMode; // only toggle light-mode overrides
+  toggleBtn.innerHTML = lightMode
+    ? `<i class="fa-solid fa-sun"></i>`
+    : `<i class="fa-solid fa-moon"></i>`;
+
+  localStorage.setItem("theme", lightMode ? "light" : "dark");
 });
+
+// Load saved theme instantly on startup
+if (localStorage.getItem("theme") === "light") {
+  lightLink.disabled = false;
+  lightMode = true;
+  toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+}
