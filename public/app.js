@@ -220,6 +220,21 @@ if (handleInput.value.trim()) {
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* THEME TOGGLE BUTTON */
 
+lightLink.media = "none";
+lightLink.onload = () => {
+  lightLink.media = "all";
+};
+
+if (localStorage.getItem("theme") === "light") {
+  lightLink.disabled = false;
+  lightMode = true;
+  toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+} else {
+  lightLink.disabled = true;
+  lightMode = false;
+  toggleBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
+}
+
 toggleBtn.addEventListener("click", () => {
   lightMode = !lightMode;
 
@@ -230,11 +245,5 @@ toggleBtn.addEventListener("click", () => {
 
   localStorage.setItem("theme", lightMode ? "light" : "dark");
 });
-
-if (localStorage.getItem("theme") === "light") {
-  lightLink.disabled = false;
-  lightMode = true;
-  toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
-}
 
 /* ------------------------------------------------------------------------------------------------------------------- */
