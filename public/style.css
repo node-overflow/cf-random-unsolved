@@ -11,7 +11,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   background: transparent;
-  color: #f6f8fa;
+  color: #f6f8fad0;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
@@ -164,8 +164,8 @@ form {
 }
 
 label {
-  font-weight: 600;
-  color: #e0e6ed;
+  font-weight: 500;
+  color: #ddd9da;
   font-size: 0.95rem;
 }
 

@@ -220,25 +220,24 @@ if (handleInput.value.trim()) {
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* THEME TOGGLE BUTTON */
 
-lightLink.media = "none";
-lightLink.onload = () => {
-  lightLink.media = "all";
-};
-
 if (localStorage.getItem("theme") === "light") {
   lightLink.disabled = false;
   lightMode = true;
+  document.documentElement.classList.add("light");
   toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
 } else {
   lightLink.disabled = true;
   lightMode = false;
+  document.documentElement.classList.remove("light");
   toggleBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
 }
 
+// Toggle Theme Instantly
 toggleBtn.addEventListener("click", () => {
   lightMode = !lightMode;
-
   lightLink.disabled = !lightMode;
+
+  document.documentElement.classList.toggle("light", lightMode);
   toggleBtn.innerHTML = lightMode
     ? `<i class="fa-solid fa-sun"></i>`
     : `<i class="fa-solid fa-moon"></i>`;
