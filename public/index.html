@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CF Random Unsolved</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="light-mode.css" id="lightModeCSS" disabled>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     integrity="sha512-pap6Y3..." crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -19,9 +18,7 @@
 <body>
   <canvas id="starCanvas" aria-hidden="true"></canvas>
 
-  <div class="nebula"></div>
-
-  <button id="toggleThemeBtn" class="btn"><i class="fa-solid fa-moon"></i></button>
+  <!-- <button id="toggleThemeBtn" class="btn"><i class="fa-solid fa-moon"></i></button> -->
 
   <div class="avatar"></div>
 
@@ -75,7 +72,8 @@
       <p id="probSolved"></p>
       <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open
         on Codeforces &nbsp; <i class="fa-solid fa-chart-simple cf_color"></i></a>
-      <button id="againBtn" class="btn">Another &nbsp; <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      <button id="againBtn" class="btn" style="margin-left: 8px;">Another &nbsp; <i
+          class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </section>
 
     <section id="status" class="status"></section>
