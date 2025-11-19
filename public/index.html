@@ -61,10 +61,17 @@
         </div>
       </div>
 
-      <label class="is_ticked">
+      <div style="display: flex; flex-direction: row; gap: 2rem;">
+        <label class="is_ticked checkBox">
         <input type="checkbox" id="is_ticked_checkbox">
         Hide rating
       </label>
+
+      <label class="tag_check checkBox">
+        <input type="checkbox" id="tag_check_checkbox">
+        Hide tags
+      </label>
+      </div>
 
       <button id="goBtn" type="submit" class="btn">Get Random Problem &nbsp; <i
           class="fa-solid fa-arrow-up-right-from-square"></i></button>

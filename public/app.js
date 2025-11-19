@@ -98,15 +98,20 @@ const fetchRandom = async query => {
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
     probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
-    // probMeta.textContent = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
-    // Hide rating if is_ticked is enabled
     query.is_ticked = document.getElementById("is_ticked_checkbox").checked;
+    query.tag_check = document.getElementById("tag_check_checkbox").checked;
     if (query.is_ticked) {
       probMeta.textContent = `Contest: ${data.contestId} • Problem: ${data.index}`;
     } else {
       probMeta.textContent = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
     }
-    probTags.textContent = `Tags: ${data.tags.join(", ")}`;
+    if (query.tag_check) {
+      probTags.textContent = "";
+      probTags.style.display = "none";
+    } else {
+      probTags.style.display = "block";
+      probTags.textContent = `Tags: ${data.tags.join(", ")}`;
+    }
     probSolved.innerHTML = `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
     probLink.href = data.url;
 

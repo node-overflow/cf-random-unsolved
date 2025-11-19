@@ -288,7 +288,7 @@ select:focus {
   font-size: 0.95rem;
 }
 
-.is_ticked {
+.checkBox {
   opacity: 70%;
   display: flex;
   align-items: center;
@@ -297,13 +297,13 @@ select:focus {
   user-select: none;
 }
 
-.is_ticked input[type="checkbox"] {
+.checkBox input[type="checkbox"] {
   width: 16px;
   height: 16px;
   accent-color: #444;
 }
 
-.is_ticked input[type="checkbox"]:focus {
+.checkBox input[type="checkbox"]:focus {
   outline: none;
   box-shadow: none;
 }
