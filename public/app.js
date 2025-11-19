@@ -83,10 +83,17 @@ loadTags();
 const fetchRandom = async query => {
   const params = new URLSearchParams();
   params.set("handle", query.handle);
+
   if (query.tags && query.tags.length) params.set("tags", query.tags.join(","));
   params.set("min", query.min);
   params.set("max", query.max);
   params.set("match", "all");
+
+  query.is_ticked = document.getElementById("is_ticked_checkbox").checked;
+  query.tag_check = document.getElementById("tag_check_checkbox").checked;
+  query.single_tag = document.getElementById("single_tag_checkbox").checked;
+
+  params.set("single_tag", query.single_tag);
 
   setStatus(`Checking handle ${query.handle}…`);
   goBtn.disabled = true;
@@ -98,20 +105,21 @@ const fetchRandom = async query => {
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
     probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
-    query.is_ticked = document.getElementById("is_ticked_checkbox").checked;
-    query.tag_check = document.getElementById("tag_check_checkbox").checked;
+
     if (query.is_ticked) {
       probMeta.textContent = `Contest: ${data.contestId} • Problem: ${data.index}`;
     } else {
       probMeta.textContent = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
     }
+
     if (query.tag_check) {
-      probTags.textContent = "";
       probTags.style.display = "none";
+      probTags.textContent = "";
     } else {
       probTags.style.display = "block";
       probTags.textContent = `Tags: ${data.tags.join(", ")}`;
     }
+
     probSolved.innerHTML = `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
     probLink.href = data.url;
 
@@ -139,7 +147,6 @@ form.addEventListener("submit", ev => {
   ev.preventDefault();
   const handle = $("#handle").value.trim();
   if (!handle) { setStatus("Please enter a Codeforces handle."); return; }
-  // if (!/^[a-zA-Z0-9_]+$/.test(handle)) { setStatus("Invalid handle. Only letters, digits, and underscore are allowed."); return; }
 
   const min = parseInt($("#min").value, 10) || 800;
   const max = parseInt($("#max").value, 10) || 3500;
@@ -206,8 +213,6 @@ const handleChange = () => {
     avatarDiv.style.opacity = "0.6";
     return;
   }
-
-  // if (!/^[a-zA-Z0-9_]+$/.test(handle)) return;
 
   loadAvatar(handle);
 };

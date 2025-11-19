@@ -91,10 +91,18 @@ app.get("/api/random-problem", async (req, res) => {
         const solvedSet = await getSolvedSet(handle);
         let candidates = problemCache.problems.filter(p => {
             if (p.rating < minRating || p.rating > maxRating) return false;
+
             if (!matchesTags(p.tags, tags, match)) return false;
+
+            if (req.query.single_tag === "true") {
+                if (p.tags.length !== 1) return false;
+                if (!tags.includes(p.tags[0])) return false;
+            }
+
             const key = `${p.contestId}-${p.index}`;
             return !solvedSet.has(key);
         });
+
 
         if (candidates.length === 0 && minRating === maxRating) {
             let next = minRating + 100;
