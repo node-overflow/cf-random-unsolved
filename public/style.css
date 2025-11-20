@@ -17,6 +17,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -48,15 +49,6 @@ body::-webkit-scrollbar-thumb:hover {
   z-index: -1;
 }
 
-#toggleThemeBtn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 10000;
-  padding: 8px 14px;
-  font-size: 0.95rem;
-}
-
 .avatar {
   position: fixed;
   top: 16px;
@@ -66,7 +58,7 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 50%;
   background: url("/default-avatar.png") center/cover no-repeat;
   cursor: pointer;
-  z-index: 9999;
+  z-index: 50;
 }
 
 .avatar:hover {
@@ -82,7 +74,7 @@ body::-webkit-scrollbar-thumb:hover {
   display: flex;
   flex-direction: column;
   gap: 21px;
-  z-index: 9999;
+  z-index: 50;
 }
 
 .social-panel a {
@@ -97,13 +89,9 @@ body::-webkit-scrollbar-thumb:hover {
   text-shadow: 0 0 10px rgba(180, 200, 255, 0.45);
 }
 
-.cf_color {
-  color: #5cd2f8a3;
-}
-
 .container {
   max-width: 900px;
-  margin: 60px auto;
+  margin: 50px auto;
   padding: 0 16px;
   text-align: center;
 }
@@ -271,13 +259,14 @@ select:focus {
   color: #ffffff;
 }
 
-#probMeta {
+#probMeta,
+#probDate {
   margin: 0 0 6px;
   color: #c2ccd6;
 }
 
 #probTags {
-  margin: 8px 0 16px;
+  margin: 0 0 8px;
   color: #00ffc8;
 }
 
@@ -368,6 +357,16 @@ footer {
     gap: 6px;
   }
 
+  .tags-box {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tag-item {
+    width: 100%;
+    text-align: center;
+  }
+
   .glass {
     padding: 16px;
     border-radius: 20px;
@@ -384,32 +383,22 @@ footer {
   }
 }
 
+@media (max-width: 600px) {
+  #result {
+    text-align: center;
+  }
+
+  #probLink,
+  #againBtn {
+    width: 100%;
+    margin: 6px 0;
+  }
+}
+
 @media (max-width: 768px) {
-  #toggleThemeBtn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: fit-content;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-  }
-
-  .avatar {
-    display: none;
-    /* position: absolute;
-    top: 8px;
-    left: 14rem; */
-  }
-
+  .avatar,
   .social-panel {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    top: 8px;
-    left: 8px;
-    transform: none;
-    gap: 18px;
-    z-index: 9999;
+    display: none;
   }
 
   h1 {
@@ -468,37 +457,5 @@ footer {
   #max {
     font-size: 0.95rem;
     padding: 10px 12px;
-  }
-}
-
-@media (max-width: 400px) {
-  .tags-box {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .tag-item {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-@media (max-width: 500px) {
-  button,
-  .btn,
-  .ghost {
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  #result {
-    text-align: center;
-  }
-
-  #probLink,
-  #againBtn {
-    width: 100%;
-    margin: 6px 0;
   }
 }

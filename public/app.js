@@ -15,8 +15,6 @@ const probSolved = $("#probSolved");
 const probLink = $("#probLink");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
-const toggleBtn = $("#toggleThemeBtn");
-const lightLink = $("#lightModeCSS");
 const avatarDiv = $(".avatar");
 const handleInput = $("#handle");
 
@@ -101,16 +99,25 @@ const fetchRandom = async query => {
   try {
     const res = await fetch(`/api/random-problem?${params.toString()}`);
     let data;
-    try { data = await res.json(); } catch { throw new Error(`Server returned ${res.status}`); }
+    try { 
+      data = await res.json(); 
+    } catch { 
+      throw new Error(`Server returned ${res.status}`); 
+    }
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
     probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
 
+    let metaLine = "";
     if (query.is_ticked) {
-      probMeta.textContent = `Contest: ${data.contestId} • Problem: ${data.index}`;
+      metaLine = `Contest: ${data.contestId} • Problem: ${data.index}`;
     } else {
-      probMeta.textContent = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
+      metaLine = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
     }
+
+    if (data.date) metaLine += ` • On: ${data.date}`;
+
+    probMeta.textContent = metaLine;
 
     if (query.tag_check) {
       probTags.style.display = "none";
@@ -120,16 +127,26 @@ const fetchRandom = async query => {
       probTags.textContent = `Tags: ${data.tags.join(", ")}`;
     }
 
-    probSolved.innerHTML = `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
+    probSolved.innerHTML =
+      `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
+
+    probDate.style.display = "none";
+    probDate.textContent = "";
+
     probLink.href = data.url;
 
     resultCard.classList.remove("hidden");
     setStatus("");
+
   } catch (e) {
     resultCard.classList.add("hidden");
-    if (/not found/i.test(e.message)) setStatus("Handle not found on Codeforces.");
-    else if (/No unsolved problems/i.test(e.message)) setStatus("No unsolved problems found for this user and filters.");
-    else setStatus(e.message || "Unknown error.");
+
+    if (/not found/i.test(e.message)) 
+      setStatus("Handle not found on Codeforces.");
+    else if (/No unsolved problems/i.test(e.message)) 
+      setStatus("No unsolved problems found for this user and filters.");
+    else 
+      setStatus(e.message || "Unknown error.");
   } finally {
     goBtn.disabled = false;
   }
@@ -228,37 +245,5 @@ handleInput.addEventListener("input", handleChange);
 if (handleInput.value.trim()) {
   handleChange();
 }
-
-/* ------------------------------------------------------------------------------------------------------------------- */
-
-
-
-
-/* ------------------------------------------------------------------------------------------------------------------- */
-/* THEME TOGGLE BUTTON */
-
-// if (localStorage.getItem("theme") === "light") {
-//   lightLink.disabled = false;
-//   lightMode = true;
-//   document.documentElement.classList.add("light");
-//   toggleBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
-// } else {
-//   lightLink.disabled = true;
-//   lightMode = false;
-//   document.documentElement.classList.remove("light");
-//   toggleBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
-// }
-
-// toggleBtn.addEventListener("click", () => {
-//   lightMode = !lightMode;
-//   lightLink.disabled = !lightMode;
-
-//   document.documentElement.classList.toggle("light", lightMode);
-//   toggleBtn.innerHTML = lightMode
-//     ? `<i class="fa-solid fa-sun"></i>`
-//     : `<i class="fa-solid fa-moon"></i>`;
-
-//   localStorage.setItem("theme", lightMode ? "light" : "dark");
-// });
 
 /* ------------------------------------------------------------------------------------------------------------------- */

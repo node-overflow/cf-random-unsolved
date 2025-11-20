@@ -18,8 +18,6 @@
 <body>
   <canvas id="starCanvas" aria-hidden="true"></canvas>
 
-  <!-- <button id="toggleThemeBtn" class="btn"><i class="fa-solid fa-moon"></i></button> -->
-
   <div class="avatar"></div>
 
   <div class="social-panel">
@@ -78,18 +76,20 @@
         </label>
       </div>
 
-      <button id="goBtn" type="submit" class="btn">Get Random Problem &nbsp; <i
+      <button id="goBtn" type="submit" class="btn" style="user-select: none;">Get Random Problem &nbsp; <i
           class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </form>
 
     <section id="result" class="card glass hidden">
       <h2 id="probTitle"></h2>
       <p id="probMeta"></p>
+      <p id="probDate" class="prob-date"></p>
       <p id="probTags"></p>
       <p id="probSolved"></p>
-      <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open
-        on Codeforces &nbsp; <i class="fa-solid fa-chart-simple cf_color"></i></a>
-      <button id="againBtn" class="btn" style="margin-left: 8px;">Another &nbsp; <i
+      <a id="probLink" target="_blank" rel="noopener" class="btn "
+        style="text-decoration: none; color: #f1f3f5; user-select: none;">Open
+        on Codeforces &nbsp; <i class="fa-solid fa-chart-simple" style="color: #5cd2f8a3;"></i></a>
+      <button id="againBtn" class="btn" style="margin-left: 8px; user-select: none;">Another &nbsp; <i
           class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </section>
 
