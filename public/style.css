@@ -66,20 +66,11 @@ body::-webkit-scrollbar-thumb:hover {
   filter: brightness(1.05);
 }
 
-.social-panel {
-  position: fixed;
-  top: 50%;
-  left: 22px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 21px;
-  z-index: 50;
-}
-
 .social-panel a {
+  display: inline-block;
+  margin-right: 17px;
   color: rgba(240, 245, 255, 0.274);
-  font-size: 1.35rem;
+  font-size: 1rem;
   transition: all 0.25s ease;
   text-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
 }
@@ -90,7 +81,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 950px;
   margin: 50px auto;
   padding: 0 16px;
   text-align: center;
@@ -396,8 +387,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .avatar,
-  .social-panel {
+  .avatar {
     display: none;
   }
 
