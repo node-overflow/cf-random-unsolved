@@ -1,4 +1,6 @@
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* VARIABLES */
 
 const $ = sel => document.querySelector(sel);
@@ -13,6 +15,8 @@ const probMeta = $("#probMeta");
 const probTags = $("#probTags");
 const probSolved = $("#probSolved");
 const probLink = $("#probLink");
+const probContestLink = $("#probContestLink");
+const contestBadges = $("#contestBadges");
 const againBtn = $("#againBtn");
 const goBtn = $("#goBtn");
 const avatarDiv = $(".avatar");
@@ -21,35 +25,45 @@ const handleInput = $("#handle");
 let lightMode = false;
 let lastQuery = null;
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* SET STATUS WHILE FETCHING PROBLEMS */
 
 const setStatus = msg => {
   if (statusBox) statusBox.textContent = msg || "";
 };
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* TAGS */
 
 const loadTags = async () => {
   try {
     setStatus("Loading tags…");
+
     const res = await fetch("/api/tags");
+
     if (!res.ok) throw new Error("Failed to fetch tags");
+
     const data = await res.json();
     const availableTags = data.tags || [];
 
     tagsBox.innerHTML = "";
+
     availableTags.forEach(t => {
       const div = document.createElement("div");
       div.className = "tag-item";
@@ -70,19 +84,24 @@ const getSelectedTags = () => $$(".tag-item.selected").map(el => el.dataset.tag)
 
 loadTags();
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* FETCH PROBLEMS */
 
 const fetchRandom = async query => {
   const params = new URLSearchParams();
+
   params.set("handle", query.handle);
 
   if (query.tags && query.tags.length) params.set("tags", query.tags.join(","));
+
   params.set("min", query.min);
   params.set("max", query.max);
   params.set("match", "all");
@@ -94,21 +113,24 @@ const fetchRandom = async query => {
   params.set("single_tag", query.single_tag);
 
   setStatus(`Checking handle ${query.handle}…`);
+
   goBtn.disabled = true;
 
   try {
     const res = await fetch(`/api/random-problem?${params.toString()}`);
     let data;
-    try { 
-      data = await res.json(); 
-    } catch { 
-      throw new Error(`Server returned ${res.status}`); 
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server returned ${res.status}`);
     }
+
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
     probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
 
     let metaLine = "";
+
     if (query.is_ticked) {
       metaLine = `Contest: ${data.contestId} • Problem: ${data.index}`;
     } else {
@@ -127,69 +149,105 @@ const fetchRandom = async query => {
       probTags.textContent = `Tags: ${data.tags.join(", ")}`;
     }
 
+    contestBadges.innerHTML = "";
+
+    const type = data.contestType;
+
+    const badgeLabels = {
+      div1: "Div. 1",
+      div2: "Div. 2",
+      div3: "Div. 3",
+      div4: "Div. 4",
+      educational: "Educational",
+      rated: "Rated",
+      unrated: "Unrated",
+      other: "Other"
+    };
+
+    if (type) {
+      const span = document.createElement("span");
+      span.className = `badge ${type}`;
+      span.textContent = badgeLabels[type] || "Other";
+      contestBadges.appendChild(span);
+    }
+
     probSolved.innerHTML =
       `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
 
     probDate.style.display = "none";
     probDate.textContent = "";
-
     probLink.href = data.url;
+
+    probContestLink.href = `https://codeforces.com/contest/${data.contestId}`;
 
     resultCard.classList.remove("hidden");
     setStatus("");
-
   } catch (e) {
     resultCard.classList.add("hidden");
 
-    if (/not found/i.test(e.message)) 
+    if (/not found/i.test(e.message))
       setStatus("Handle not found on Codeforces.");
-    else if (/No unsolved problems/i.test(e.message)) 
+    else if (/No unsolved problems/i.test(e.message))
       setStatus("No unsolved problems found for this user and filters.");
-    else 
+    else
       setStatus(e.message || "Unknown error.");
   } finally {
     goBtn.disabled = false;
   }
 };
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* SUBMIT BUTTON FUNCIONALITY */
 
 form.addEventListener("submit", ev => {
   ev.preventDefault();
+
   const handle = $("#handle").value.trim();
+
   if (!handle) { setStatus("Please enter a Codeforces handle."); return; }
 
   const min = parseInt($("#min").value, 10) || 800;
   const max = parseInt($("#max").value, 10) || 3500;
+
   if (min > max) { setStatus("Min rating must be <= max rating."); return; }
 
   const tags = getSelectedTags();
+
   lastQuery = { handle, min, max, tags };
+
   fetchRandom(lastQuery);
 });
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* AGAIN BUTTON FUCNTIONALITY */
 
 againBtn.addEventListener("click", () => { if (lastQuery) fetchRandom(lastQuery); });
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */
 
 
 
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* AVATAR */
 
 const loadAvatar = async (handle) => {
@@ -202,15 +260,18 @@ const loadAvatar = async (handle) => {
 
     if (data.avatarURL) {
       const img = new Image();
+
       img.onload = () => {
         avatarDiv.style.transition = "background-image 0.4s ease, opacity 0.4s ease";
         avatarDiv.style.backgroundImage = `url('${data.avatarURL}')`;
         avatarDiv.style.opacity = "1";
       };
+
       img.onerror = () => {
         avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
         avatarDiv.style.opacity = "1";
       };
+
       img.src = data.avatarURL;
     } else {
       avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
@@ -225,6 +286,7 @@ const loadAvatar = async (handle) => {
 
 const handleChange = () => {
   const handle = handleInput.value.trim();
+
   if (!handle) {
     avatarDiv.style.backgroundImage = "url('/assets/avatar-placeholder.svg')";
     avatarDiv.style.opacity = "0.6";
@@ -236,7 +298,9 @@ const handleChange = () => {
 
 avatarDiv.addEventListener("click", () => {
   const handle = handleInput.value.trim();
+
   if (!handle) return;
+
   window.open(`https://codeforces.com/profile/${handle}`, "_blank");
 });
 
@@ -246,4 +310,5 @@ if (handleInput.value.trim()) {
   handleChange();
 }
 
-/* ------------------------------------------------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------------------- */

@@ -68,17 +68,25 @@
     </form>
 
     <section id="result" class="card glass hidden">
-      <h2 id="probTitle"></h2>
+      <div class="problem-header">
+        <h2 id="probTitle"></h2>
+        <div id="contestBadges" class="contest-badges"></div>
+      </div>
       <p id="probMeta"></p>
       <p id="probDate" class="prob-date"></p>
       <p id="probTags"></p>
+
       <p id="probSolved"></p>
-      <a id="probLink" target="_blank" rel="noopener" class="btn "
-        style="text-decoration: none; color: #f1f3f5; user-select: none;">Open
-        on Codeforces &nbsp; <i class="fa-solid fa-chart-simple" style="color: #5cd2f8a3;"></i></a>
-      <button id="againBtn" class="btn" style="margin-left: 8px; user-select: none;">Another &nbsp; <i
-          class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      <div style="user-select: none !important;">
+        <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open
+          on Codeforces &nbsp; <i class="fa-solid fa-chart-simple" style="color: #5cd2f8a3;"></i></a>
+        <a id="probContestLink" target="_blank" rel="noopener" class="btn" style="margin-left: 4px;">
+          View Contest &nbsp; <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+        </a>
+        <button id="againBtn" class="btn" style="margin-left: 4px;">Another &nbsp; <i
+            class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </section>
+    </div>
 
     <section id="status" class="status"></section>
   </main>
@@ -86,17 +94,17 @@
   <footer>
     <p>&copy; 2025 Piyush Jha (@node_overflow). All rights reserved.</p>
     <div class="social-panel">
-    <a href="https://github.com/node-overflow/cf-random-unsolved" target="_blank" rel="noopener" aria-label="GitHub">
-      <i class="fa-brands fa-github"></i>
-    </a>
-    <a href="https://x.com/piyush_cpp" target="_blank" rel="noopener" aria-label="X (Twitter)">
-      <i class="fa-brands fa-twitter"></i>
-    </a>
-    <a href="https://mail.google.com/mail/?view=cm&to=nodexoverflow@gmail.com" target="_blank" rel="noopener"
-      aria-label="Email">
-      <i class="fa-solid fa-envelope"></i>
-    </a>
-  </div>
+      <a href="https://github.com/node-overflow/cf-random-unsolved" target="_blank" rel="noopener" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+      </a>
+      <a href="https://x.com/piyush_cpp" target="_blank" rel="noopener" aria-label="X (Twitter)">
+        <i class="fa-brands fa-twitter"></i>
+      </a>
+      <a href="https://mail.google.com/mail/?view=cm&to=nodexoverflow@gmail.com" target="_blank" rel="noopener"
+        aria-label="Email">
+        <i class="fa-solid fa-envelope"></i>
+      </a>
+    </div>
   </footer>
 
   <script src="stars.js" defer></script>

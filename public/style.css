@@ -244,6 +244,79 @@ select:focus {
   display: none;
 }
 
+.problem-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.problem-header h2 {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.contest-badges {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.12);
+  color: #e8ecf4;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.badge.div1 {
+  background: rgba(220, 70, 70, 0.28);
+  color: #ffb3b3;
+}
+
+.badge.div2 {
+  background: rgba(70, 120, 200, 0.28);
+  color: #c8dbff;
+}
+
+.badge.div3 {
+  background: rgba(60, 170, 95, 0.28);
+  color: #c7f5d4;
+}
+
+.badge.div4 {
+  background: rgba(200, 160, 40, 0.28);
+  color: #ffe9a6;
+}
+
+.badge.educational {
+  background: rgba(140, 80, 220, 0.28);
+  color: #e5d4ff;
+}
+
+.badge.rated {
+  background: rgba(50, 180, 150, 0.28);
+  color: #c8fff0;
+}
+
+.badge.unrated {
+  background: rgba(255, 255, 255, 0.14);
+  color: #e1e1e1;
+}
+
+.badge.other {
+  background: rgba(255, 255, 255, 0.18);
+  color: #e8e8e8;
+}
+
 #probTitle {
   margin: 0 0 8px;
   font-size: 1.4rem;
@@ -380,7 +453,8 @@ footer {
   }
 
   #probLink,
-  #againBtn {
+  #againBtn,
+  #probContestLink {
     width: 100%;
     margin: 6px 0;
   }

@@ -1,14 +1,24 @@
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* IMPORTS */
+
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 import path from "path";
 import { fileURLToPath } from "url";
 
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
 /* ----------------------------------------------------------------------------------------- */
 
 
 /* VARIABLES */
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,37 +27,65 @@ const PORT = process.env.PORT || 3000;
 
 const CF_BASE = "https://codeforces.com/api";
 const userCache = new Map();
+
 let problemCache = { lastFetched: 0, problems: [], tags: [] };
 let contestCache = { lastFetched: 0, contests: new Map() };
+
 
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* INTIAL CONFIGURATION */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* INITIAL CONFIGURATION */
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "assets")));
 
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
 /* ----------------------------------------------------------------------------------------- */
 
 
 /* FETCHES CF API ENDPOINT */
+
 const cfGet = async (endpoint) => {
     const res = await fetch(`${CF_BASE}${endpoint}`, { headers: { "User-Agent": "cf-random-unsolved/1.0" } });
+
     if (!res.ok) throw new Error(`CF API HTTP ${res.status}`);
+
     const data = await res.json();
+
     if (data.status !== "OK") throw new Error(`CF API error: ${data.comment || "Unknown"}`);
+
     return data.result;
 };
+
 
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* FETCHES CF PROBLMES AND STORES THEM IN problemCache  */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* FETCHES CF PROBLEMS AND STORES THEM IN problemCache */
+
 const ensureProblemCache = async () => {
     const now = Date.now();
+
     if (now - problemCache.lastFetched < 30 * 60 * 1000 && problemCache.problems.length) return;
+
     const result = await cfGet("/problemset.problems");
     const problems = result.problems || [];
     const stats = result.problemStatistics || [];
@@ -60,63 +98,132 @@ const ensureProblemCache = async () => {
             ...p,
             solvedCount: statMap.get(`${p.contestId}-${p.index}`) || 0
         }));
+
     const tagSet = new Set();
+
     filtered.forEach(p => p.tags.forEach(t => tagSet.add(t)));
-    problemCache = { lastFetched: now, problems: filtered, tags: Array.from(tagSet).sort((a, b) => a.localeCompare(b)) };
+
+    problemCache = { lastFetched: now, problems: filtered, tags: Array.from(tagSet).sort() };
 };
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
 
 /* ----------------------------------------------------------------------------------------- */
 
 
 /* FETCHES CONTEST DATA EVERY 6 HOURS */
+
 const ensureContestCache = async () => {
     const now = Date.now();
+
     if (now - contestCache.lastFetched < 6 * 60 * 60 * 1000 && contestCache.contests.size)
         return;
 
     const list = await cfGet("/contest.list?gym=false");
 
     const map = new Map();
+
     list.forEach(c => {
         if (c.id && c.startTimeSeconds) {
-            map.set(c.id, c.startTimeSeconds);
+            map.set(c.id, {
+                name: c.name,
+                start: c.startTimeSeconds
+            });
         }
     });
 
     contestCache = { lastFetched: now, contests: map };
 };
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* RETURNS SOLVED COUNT OF A PROBLEM */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RETURNS SOLVED SET */
+
 const getSolvedSet = async (handle) => {
     const now = Date.now();
     const cache = userCache.get(handle);
+
     if (cache && now - cache.lastFetched < 5 * 60 * 1000) return cache.solvedSet;
 
     const submissions = await cfGet(`/user.status?handle=${encodeURIComponent(handle)}&from=1&count=100000`);
+
     const solved = new Set(submissions
         .filter(sub => sub.verdict === "OK" && sub.problem?.contestId && sub.problem?.index)
         .map(sub => `${sub.problem.contestId}-${sub.problem.index}`));
 
     userCache.set(handle, { lastFetched: now, solvedSet: solved });
+
     return solved;
 };
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* MATHCES SELECTED TAGS */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* MATCHES SELECTED TAGS */
+
 const matchesTags = (problemTags, selected, mode) => {
     if (!selected || selected.length === 0) return true;
+
     const set = new Set(problemTags);
+
     return mode === "all" ? selected.every(t => set.has(t)) : selected.some(t => set.has(t));
 };
 
+
 /* ----------------------------------------------------------------------------------------- */
 
-/* ENSURES THE PROBLEM CACHE IS LOADED AND RETURNS TAGS */
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RETURNS CONTEST TYPE */
+
+const detectContestType = (name) => {
+    if (!name) return "other";
+
+    const lower = name.toLowerCase();
+
+    if (lower.includes("educational")) return "educational";
+    if (lower.includes("div. 1")) return "div1";
+    if (lower.includes("div. 2")) return "div2";
+    if (lower.includes("div. 3")) return "div3";
+    if (lower.includes("div. 4")) return "div4";
+    if (lower.includes("rated")) return "rated";
+    if (lower.includes("unrated")) return "unrated";
+
+    return "other";
+};
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* TAGS API */
+
 app.get("/api/tags", async (req, res) => {
     try {
         await ensureProblemCache();
@@ -126,13 +233,21 @@ app.get("/api/tags", async (req, res) => {
     }
 });
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* RETURNS RANDOM UNSOLVED PROBLEM FILTERED BY TAGS AND RATING */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RANDOM PROBLEM API (UPDATED) */
+
 app.get("/api/random-problem", async (req, res) => {
     try {
         const handle = (req.query.handle || "").trim();
+
         if (!handle) return res.status(400).json({ error: "Missing 'handle' query param" });
 
         const tagsParam = (req.query.tags || "").trim();
@@ -146,22 +261,22 @@ app.get("/api/random-problem", async (req, res) => {
             return res.status(400).json({ error: "min rating must be <= max rating" });
 
         await ensureProblemCache();
+
         const solvedSet = await getSolvedSet(handle);
 
         let candidates = problemCache.problems.filter(p => {
             if (p.rating < minRating || p.rating > maxRating) return false;
             if (!matchesTags(p.tags, tags, match)) return false;
-
             if (req.query.single_tag === "true") {
                 if (p.tags.length !== 1) return false;
                 if (!tags.includes(p.tags[0])) return false;
             }
-
             return !solvedSet.has(`${p.contestId}-${p.index}`);
         });
 
         if (candidates.length === 0 && minRating === maxRating) {
             let next = minRating + 100;
+
             while (next <= 3500 && candidates.length === 0) {
                 candidates = problemCache.problems.filter(p => {
                     if (p.rating !== next) return false;
@@ -179,11 +294,17 @@ app.get("/api/random-problem", async (req, res) => {
         const prob = candidates[rnd];
 
         await ensureContestCache();
-        const startTs = contestCache.contests.get(prob.contestId) || null;
+
+        const contest = contestCache.contests.get(prob.contestId) || null;
+
+        const startTs = contest?.start || null;
+        const contestName = contest?.name || null;
 
         let date = null;
+
         if (startTs) {
             const d = new Date(startTs * 1000);
+
             date =
                 `${String(d.getDate()).padStart(2, "0")}/` +
                 `${String(d.getMonth() + 1).padStart(2, "0")}/` +
@@ -194,13 +315,16 @@ app.get("/api/random-problem", async (req, res) => {
 
         return res.json({
             contestId: prob.contestId,
+            contestUrl: `https://codeforces.com/contest/${prob.contestId}`,
             index: prob.index,
             name: prob.name,
             rating: prob.rating,
             tags: prob.tags,
             solvedCount: prob.solvedCount,
             url,
-            date
+            date,
+            contestName,
+            contestType: detectContestType(contestName)
         });
 
     } catch (e) {
@@ -208,16 +332,25 @@ app.get("/api/random-problem", async (req, res) => {
     }
 });
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* RETURNS USER'S AVATAR URL */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* USER AVATAR */
+
 app.get("/api/user-avatar", async (req, res) => {
     try {
         const handle = (req.query.handle || "").trim();
+
         if (!handle) return res.status(400).json({ error: "Missing handle query param" });
 
         const userData = await cfGet(`/user.info?handles=${encodeURIComponent(handle)}`);
+
         if (!userData?.length) return res.status(404).json({ error: "User not found" });
 
         const user = userData[0];
@@ -232,28 +365,57 @@ app.get("/api/user-avatar", async (req, res) => {
     }
 });
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* SERVES INDEX.HTML */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* SERVE INDEX */
+
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* STARTS THE SERVER */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* START SERVER */
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* LOADS AND CACHES CF PROBLEMS IF CACHE IS EMPTY */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* PRELOAD CACHE */
+
 ensureProblemCache();
 
+
 /* ----------------------------------------------------------------------------------------- */
 
 
-/* LOGS UNHANDLED ASYNC ERRORS THAT WOULD CRASH THE SERVER */
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* HANDLE UNHANDLED ERRORS */
+
 process.on("unhandledRejection", err => console.error("UnhandledRejection:", err));
+
 
 /* ----------------------------------------------------------------------------------------- */
