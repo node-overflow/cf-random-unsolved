@@ -329,9 +329,18 @@ select:focus {
   color: #c2ccd6;
 }
 
-#probTags {
-  margin: 0 0 8px;
-  color: #00ffc8;
+#probTags span {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-right: 5px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  background: #14254273;
+  border: 1px solid rgba(140, 165, 210, 0.5);
+  color: #68c26d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
 }
 
 #probSolved {

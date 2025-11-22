@@ -7,7 +7,7 @@ const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
 
 const form = $("#filterForm");
-const tagsBox = $("#tagsBox");
+const Box = $("#tagsBox");
 const statusBox = $("#status");
 const resultCard = $("#result");
 const probTitle = $("#probTitle");
@@ -146,7 +146,9 @@ const fetchRandom = async query => {
       probTags.textContent = "";
     } else {
       probTags.style.display = "block";
-      probTags.textContent = `Tags: ${data.tags.join(", ")}`;
+      probTags.innerHTML = data.tags
+        .map(tag => `<span class="tag">${tag}</span>`)
+        .join(" ");
     }
 
     contestBadges.innerHTML = "";
