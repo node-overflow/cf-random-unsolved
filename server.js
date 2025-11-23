@@ -266,11 +266,22 @@ app.get("/api/random-problem", async (req, res) => {
 
         let candidates = problemCache.problems.filter(p => {
             if (p.rating < minRating || p.rating > maxRating) return false;
+
             if (!matchesTags(p.tags, tags, match)) return false;
+
             if (req.query.single_tag === "true") {
-                if (p.tags.length !== 1) return false;
-                if (!tags.includes(p.tags[0])) return false;
+                if (tags.length === 0) return false;
+
+                const setA = new Set(p.tags);
+                const setB = new Set(tags);
+
+                if (setA.size !== setB.size) return false;
+
+                for (const t of setA) {
+                    if (!setB.has(t)) return false;
+                }
             }
+
             return !solvedSet.has(`${p.contestId}-${p.index}`);
         });
 

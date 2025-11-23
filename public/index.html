@@ -49,7 +49,7 @@
       <div style="display: flex; flex-direction: row; gap: 2rem;">
         <label class="single_tag checkBox">
           <input type="checkbox" id="single_tag_checkbox">
-          One tag only
+          Tags only
         </label>
 
         <label class="is_ticked checkBox">
@@ -70,21 +70,21 @@
     <section id="result" class="card glass hidden">
       <div class="problem-header">
         <h2 id="probTitle"></h2>
-        <div id="contestBadges" class="contest-badges"></div>
+        <div id="contestBadges" class="contest-badges" style="user-select: none;"></div>
       </div>
-      <p id="probMeta"></p>
-      <p id="probDate" class="prob-date"></p>
+      <p id="probMeta" style="user-select: none;"></p>
+      <p id="probDate" class="prob-date" style="user-select: none;"></p>
       <p id="probTags" style="user-select: none;"></p>
 
-      <p id="probSolved"></p>
+      <p id="probSolved" style="user-select: none;"></p>
       <div style="user-select: none !important;">
         <a id="probLink" target="_blank" rel="noopener" class="btn " style="text-decoration: none; color: #f1f3f5;">Open
           on Codeforces &nbsp; <i class="fa-solid fa-chart-simple" style="color: #5cd2f8a3;"></i></a>
         <a id="probContestLink" target="_blank" rel="noopener" class="btn" style="margin-left: 4px;">
           View Contest &nbsp; <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
         </a>
-        <button id="againBtn" class="btn" style="margin-left: 4px;">Another &nbsp; <i
-            class="fa-solid fa-arrow-up-right-from-square"></i></button>
+        <a id="againBtn" class="btn" style="margin-left: 4px;">Another &nbsp; <i
+            class="fa-solid fa-arrow-up-right-from-square"></i></a>
     </section>
     </div>
 

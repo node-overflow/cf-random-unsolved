@@ -239,7 +239,18 @@ form.addEventListener("submit", ev => {
 
 /* AGAIN BUTTON FUCNTIONALITY */
 
-againBtn.addEventListener("click", () => { if (lastQuery) fetchRandom(lastQuery); });
+againBtn.addEventListener("click", () => {
+  const handle = $("#handle").value.trim();
+  const min = parseInt($("#min").value, 10) || 800;
+  const max = parseInt($("#max").value, 10) || 3500;
+  const tags = getSelectedTags();
+
+  const newQuery = { handle, min, max, tags };
+  lastQuery = newQuery;
+
+  fetchRandom(newQuery);
+});
+
 
 
 /* ----------------------------------------------------------------------------------------- */
