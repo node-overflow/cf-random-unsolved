@@ -93,15 +93,112 @@ loadTags();
 /* ----------------------------------------------------------------------------------------- */
 
 
+/* RENDERS PROBLEMS */
+
+const renderProblem = (data, query) => {
+  probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
+
+  let metaLine = query.is_ticked
+    ? `Contest: ${data.contestId} • Problem: ${data.index}`
+    : `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
+
+  if (data.date) metaLine += ` • On: ${data.date}`;
+
+  probMeta.textContent = metaLine;
+}
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RENDERS TAGS */
+
+const renderTags = (tags, query) => {
+  if (query.tag_check) {
+    probTags.style.display = "none";
+    probTags.textContent = "";
+    return;
+  }
+
+  probTags.style.display = "block";
+
+  if (!tags || tags.length === 0) {
+    probTags.innerHTML = `<span class="tag unknown">Unknown tag</span>`;
+    return;
+  }
+
+  probTags.innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join(" ");
+}
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RENDERS BADGE */
+
+const renderBadges = (type) => {
+  contestBadges.innerHTML = "";
+
+  if (!type) return;
+
+  const badgeLabels = {
+    div1: "Div. 1",
+    div2: "Div. 2",
+    div3: "Div. 3",
+    div4: "Div. 4",
+    educational: "Educational",
+    rated: "Rated",
+    unrated: "Unrated",
+    other: "Other"
+  };
+
+  const span = document.createElement("span");
+  span.className = `badge ${type}`;
+  span.textContent = badgeLabels[type] || "Other";
+  contestBadges.appendChild(span);
+}
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+/* RENDERS SOLVED COUNT */
+
+const renderSolvedCount = (count) => {
+  probSolved.innerHTML = `
+    <i class="fa-solid fa-user user-icon"></i> 
+    Solved by ${Intl.NumberFormat("en-US").format(count)} users
+  `;
+}
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+
 /* FETCH PROBLEMS */
 
-const fetchRandom = async query => {
+const fetchRandom = async (query) => {
   const params = new URLSearchParams();
 
   params.set("handle", query.handle);
-
   if (query.tags && query.tags.length) params.set("tags", query.tags.join(","));
-
   params.set("min", query.min);
   params.set("max", query.max);
   params.set("match", "all");
@@ -113,77 +210,26 @@ const fetchRandom = async query => {
   params.set("single_tag", query.single_tag);
 
   setStatus(`Checking handle ${query.handle}…`);
-
   goBtn.disabled = true;
+  againBtn.disabled = true;
 
   try {
     const res = await fetch(`/api/random-problem?${params.toString()}`);
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error(`Server returned ${res.status}`);
-    }
+    const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
-    probTitle.textContent = `${data.name} (${data.contestId}${data.index})`;
+    renderProblem(data, query);
+    renderTags(data.tags, query);
+    renderBadges(data.contestType);
+    renderSolvedCount(data.solvedCount);
 
-    let metaLine = "";
-
-    if (query.is_ticked) {
-      metaLine = `Contest: ${data.contestId} • Problem: ${data.index}`;
-    } else {
-      metaLine = `Rating: ${data.rating} • Contest: ${data.contestId} • Problem: ${data.index}`;
-    }
-
-    if (data.date) metaLine += ` • On: ${data.date}`;
-
-    probMeta.textContent = metaLine;
-
-    if (query.tag_check) {
-      probTags.style.display = "none";
-      probTags.textContent = "";
-    } else {
-      probTags.style.display = "block";
-      probTags.innerHTML = data.tags
-        .map(tag => `<span class="tag">${tag}</span>`)
-        .join(" ");
-    }
-
-    contestBadges.innerHTML = "";
-
-    const type = data.contestType;
-
-    const badgeLabels = {
-      div1: "Div. 1",
-      div2: "Div. 2",
-      div3: "Div. 3",
-      div4: "Div. 4",
-      educational: "Educational",
-      rated: "Rated",
-      unrated: "Unrated",
-      other: "Other"
-    };
-
-    if (type) {
-      const span = document.createElement("span");
-      span.className = `badge ${type}`;
-      span.textContent = badgeLabels[type] || "Other";
-      contestBadges.appendChild(span);
-    }
-
-    probSolved.innerHTML =
-      `<i class="fa-solid fa-user user-icon"></i> Solved by ${data.solvedCount} users`;
-
-    probDate.style.display = "none";
-    probDate.textContent = "";
     probLink.href = data.url;
-
     probContestLink.href = `https://codeforces.com/contest/${data.contestId}`;
 
     resultCard.classList.remove("hidden");
     setStatus("");
+
   } catch (e) {
     resultCard.classList.add("hidden");
 
@@ -195,6 +241,7 @@ const fetchRandom = async query => {
       setStatus(e.message || "Unknown error.");
   } finally {
     goBtn.disabled = false;
+    againBtn.disabled = false;
   }
 };
 
@@ -263,6 +310,8 @@ againBtn.addEventListener("click", () => {
 
 /* AVATAR */
 
+let avatarDebounceTimer = null;
+
 const loadAvatar = async (handle) => {
   avatarDiv.style.backgroundImage = "url('/assets/avatar-placeholder.png')";
   avatarDiv.style.opacity = "0.6";
@@ -293,6 +342,7 @@ const loadAvatar = async (handle) => {
   } catch (err) {
     avatarDiv.style.backgroundImage = "url('/default-avatar.png')";
     avatarDiv.style.opacity = "1";
+
     console.error("Failed to load avatar:", err);
   }
 };
@@ -303,17 +353,20 @@ const handleChange = () => {
   if (!handle) {
     avatarDiv.style.backgroundImage = "url('/assets/avatar-placeholder.svg')";
     avatarDiv.style.opacity = "0.6";
+
     return;
   }
 
-  loadAvatar(handle);
+  clearTimeout(avatarDebounceTimer);
+  avatarDebounceTimer = setTimeout(() => {
+    loadAvatar(handle);
+  }, 250);
 };
 
 avatarDiv.addEventListener("click", () => {
   const handle = handleInput.value.trim();
 
   if (!handle) return;
-
   window.open(`https://codeforces.com/profile/${handle}`, "_blank");
 });
 

@@ -92,7 +92,7 @@ body::-webkit-scrollbar-thumb:hover {
   font-size: 2.4rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #ffffff 0%, #dbe2ee 50%, #b8c1cc 100%);
+  background: linear-gradient(90deg, #dbe2ee 0%, #dbe2ee 50%, #b8c1cc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
