@@ -15,13 +15,4 @@ Get a random Codeforces problem a user hasn't solved, filtered by tags and ratin
 - HTML, CSS, JS
 - Uses Codeforces API
 
-## Setup
-
-```bash
-git clone <this-repo>
-cd cf-random-unsolved
-npm install
-npm start
-```
-
-# Developed by node_overflow 👨🏻‍💻
+# Designed and Developed by Piyush Jha
