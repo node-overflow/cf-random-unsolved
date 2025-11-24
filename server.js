@@ -151,13 +151,16 @@ const ensureContestCache = async () => {
 
 /* RETURNS SOLVED SET */
 
-const getSolvedSet = async (handle) => {
+const getSolvedSet = async (handle, refresh = false) => {
     const now = Date.now();
-    const cache = userCache.get(handle);
+    const cached = userCache.get(handle);
 
-    if (cache && now - cache.lastFetched < 5 * 60 * 1000) return cache.solvedSet;
+    if (!refresh && cached && now - cached.lastFetched < 15 * 60 * 1000) {
+        return cached.solvedSet;
+    }
 
     let from = 1;
+
     const solved = new Set();
 
     while (true) {
@@ -165,16 +168,15 @@ const getSolvedSet = async (handle) => {
             `/user.status?handle=${encodeURIComponent(handle)}&from=${from}&count=1000`
         );
 
-        if (!submissions || submissions.length === 0) break;
+        if (!submissions.length) break;
 
         for (const sub of submissions) {
-            if (sub.verdict === "OK" && sub.problem?.contestId && sub.problem?.index) {
+            if (sub.verdict === "OK") {
                 solved.add(`${sub.problem.contestId}-${sub.problem.index}`);
             }
         }
 
         if (submissions.length < 1000) break;
-
         from += 1000;
     }
 
@@ -328,11 +330,14 @@ app.get("/api/random-problem", async (req, res) => {
         if (minRating > maxRating)
             return res.status(400).json({ error: "min rating must be <= max rating" });
 
-        const [_, solvedSet, __] = await Promise.all([
+        const refresh = req.query.refresh === "true";
+
+        await Promise.all([
             ensureProblemCache(),
-            getSolvedSet(handle),
             ensureContestCache()
         ]);
+
+        const solvedSet = await getSolvedSet(handle, refresh);
 
         let candidates = [];
 
