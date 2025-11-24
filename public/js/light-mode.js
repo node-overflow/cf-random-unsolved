@@ -1,5 +1,5 @@
 export const LIGHT_STYLE = `
-  body {
+body {
   background: #213a50;
   color: #1e1e1e;
 }
@@ -143,7 +143,7 @@ select:focus {
 }
 
 footer {
-  color: #b9b6b6cf;
+  color: #e1dfdff5;
 }
 
 .cf_i {

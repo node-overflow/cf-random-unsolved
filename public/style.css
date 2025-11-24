@@ -83,10 +83,11 @@ body::-webkit-scrollbar-thumb:hover {
 #toggleThemeBtn {
   position: fixed;
   top: 16px;
-  right: 16px;
-  z-index: 10000;
+  right: 25px;
+  z-index: 50;
   padding: 8px 14px;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
+  width: fit-content;
 }
 
 .container {
@@ -480,8 +481,9 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .avatar {
-    display: none;
+  .avatar,
+  toggleThemeBtn {
+    top: 8px;
   }
 
   h1 {
