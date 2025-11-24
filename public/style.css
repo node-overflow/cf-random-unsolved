@@ -80,6 +80,15 @@ body::-webkit-scrollbar-thumb:hover {
   text-shadow: 0 0 10px rgba(180, 200, 255, 0.45);
 }
 
+#toggleThemeBtn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10000;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+}
+
 .container {
   max-width: 950px;
   margin: 50px auto;

@@ -16,6 +16,8 @@ import {
     renderSolvedCount
 } from "./render.js";
 
+import { LIGHT_STYLE } from "./light-mode.js";
+
 /* ----------------------------------------------------------------------------------------- */
 
 
@@ -173,6 +175,11 @@ form.addEventListener("submit", ev => {
 
     const tags = getSelectedTags();
 
+    if ($("#single_tag_checkbox").checked && tags.length === 0) {
+        setStatus("Select at least 1 tag when using Tags Only mode.");
+        return;
+    }
+
     lastQuery = { handle, min, max, tags };
 
     fetchRandom(lastQuery);
@@ -188,16 +195,16 @@ form.addEventListener("submit", ev => {
 /* AGAIN BTN FUNCTIONALITY */
 
 againBtn.addEventListener("click", () => {
-  const handle = $("#handle").value.trim();
-  const min = parseInt($("#min").value, 10) || 800;
-  const max = parseInt($("#max").value, 10) || 3500;
-  const tags = getSelectedTags();
+    const handle = $("#handle").value.trim();
+    const min = parseInt($("#min").value, 10) || 800;
+    const max = parseInt($("#max").value, 10) || 3500;
+    const tags = getSelectedTags();
 
-  const newQuery = { handle, min, max, tags };
+    const newQuery = { handle, min, max, tags };
 
-  lastQuery = newQuery;
+    lastQuery = newQuery;
 
-  fetchRandom(newQuery);
+    fetchRandom(newQuery);
 });
 
 /* ----------------------------------------------------------------------------------------- */
@@ -265,9 +272,93 @@ avatarDiv.addEventListener("click", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadFilters();
+
     const initialHandle = handleInput.value.trim();
-    
+
     if (initialHandle) loadAvatar(initialHandle);
+});
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+/* LOCAL STORAGE - SAVE USERNAME + RATING RANGE */
+
+const saveFilters = () => {
+    const handle = $("#handle").value.trim();
+    const min = parseInt($("#min").value, 10) || 800;
+    const max = parseInt($("#max").value, 10) || 3500;
+
+    const data = { handle, min, max };
+    localStorage.setItem("cfRandomBasicFilters", JSON.stringify(data));
+}
+
+handleInput.addEventListener("input", saveFilters);
+$("#min").addEventListener("input", saveFilters);
+$("#max").addEventListener("input", saveFilters);
+
+const loadFilters = () => {
+    const raw = localStorage.getItem("cfRandomBasicFilters");
+    if (!raw) return;
+
+    try {
+        const data = JSON.parse(raw);
+
+        if (data.handle) $("#handle").value = data.handle;
+        if (data.min) $("#min").value = data.min;
+        if (data.max) $("#max").value = data.max;
+
+    } catch (err) {
+        console.error("Failed to load filters:", err);
+    }
+}
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+/* LIGHT MODE TOGGLE */
+
+const enableLightMode = () => {
+    let style = document.getElementById("light-theme");
+
+    if (!style) {
+        style = document.createElement("style");
+        style.id = "light-theme";
+        style.textContent = LIGHT_STYLE;
+        document.head.appendChild(style);
+    }
+}
+
+const disableLightMode = () => {
+    const style = document.getElementById("light-theme");
+
+    if (style) style.remove();
+}
+
+const toggleBtn = $("#toggleThemeBtn");
+
+let lightMode = false;
+
+toggleBtn.addEventListener("click", () => {
+    lightMode = !lightMode;
+
+    if (lightMode) {
+        enableLightMode();
+    } else {
+        disableLightMode();
+    }
+
+    toggleBtn.innerHTML = lightMode
+        ? `<i class="fa-solid fa-sun"></i>`
+        : `<i class="fa-solid fa-moon"></i>`;
 });
 
 /* ----------------------------------------------------------------------------------------- */
