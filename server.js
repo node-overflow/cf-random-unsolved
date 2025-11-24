@@ -24,6 +24,7 @@ const PORT = process.env.PORT || 3000;
 
 const CF_BASE = "https://codeforces.com/api";
 const userCache = new Map();
+const serveCache = new Map();
 
 let problemCache = { lastFetched: 0, problems: [], tags: [] };
 let contestCache = { lastFetched: 0, contests: new Map() };
@@ -205,6 +206,67 @@ const matchesTags = (problemTags, selected, mode) => {
 
 /* ----------------------------------------------------------------------------------------- */
 
+/* PROBLEM CACHE (n <= 10) IN SET LOGIC */
+
+const getServeCache = (handle) => {
+    if (!serveCache.has(handle)) {
+        serveCache.set(handle, { recent: [], queue: [] });
+    }
+    return serveCache.get(handle);
+};
+
+
+const shuffle = (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+};
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
+/* SENDS PROBLEM */
+
+const sendProblem = (prob, res) => {
+
+    const contest = contestCache.contests.get(prob.contestId) || null;
+    const startTs = contest?.start || null;
+    const d = startTs ? new Date(startTs * 1000) : null;
+
+    const date = d
+        ? `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`
+        : null;
+
+    const url = `https://codeforces.com/contest/${prob.contestId}/problem/${prob.index}`;
+
+    return res.json({
+        contestId: prob.contestId,
+        contestUrl: `https://codeforces.com/contest/${prob.contestId}`,
+        index: prob.index,
+        name: prob.name,
+        rating: prob.rating,
+        tags: prob.tags,
+        solvedCount: prob.solvedCount,
+        url,
+        date,
+        contestName: contest?.name || null,
+        contestType: contest?.type || "other"
+    });
+};
+
+/* ----------------------------------------------------------------------------------------- */
+
+
+
+
+/* ----------------------------------------------------------------------------------------- */
+
 /* RETURNS CONTEST TYPE */
 
 const detectContestType = (name) => {
@@ -248,7 +310,7 @@ app.get("/api/tags", async (req, res) => {
 
 /* ----------------------------------------------------------------------------------------- */
 
-/* RANDOM PROBLEM API (UPDATED) */
+/* RANDOM PROBLEM API */
 
 app.get("/api/random-problem", async (req, res) => {
     try {
@@ -319,42 +381,36 @@ app.get("/api/random-problem", async (req, res) => {
         if (candidates.length === 0)
             return res.status(404).json({ error: "No unsolved problems found for given filters." });
 
-        const rnd = Math.floor(Math.random() * candidates.length);
-        const prob = candidates[rnd];
-
         await ensureContestCache();
 
-        const contest = contestCache.contests.get(prob.contestId) || null;
+        const cache = getServeCache(handle);
 
-        const startTs = contest?.start || null;
-        const contestName = contest?.name || null;
-
-        let date = null;
-
-        if (startTs) {
-            const d = new Date(startTs * 1000);
-
-            date =
-                `${String(d.getDate()).padStart(2, "0")}/` +
-                `${String(d.getMonth() + 1).padStart(2, "0")}/` +
-                `${d.getFullYear()}`;
+        if (cache.lastCount !== candidates.length) {
+            cache.index = 0;
+            cache.queue = [];
+            cache.lastCount = candidates.length;
         }
 
-        const url = `https://codeforces.com/contest/${prob.contestId}/problem/${prob.index}`;
+        if (candidates.length <= 10) {
+            const idx = cache.index || 0;
 
-        return res.json({
-            contestId: prob.contestId,
-            contestUrl: `https://codeforces.com/contest/${prob.contestId}`,
-            index: prob.index,
-            name: prob.name,
-            rating: prob.rating,
-            tags: prob.tags,
-            solvedCount: prob.solvedCount,
-            url,
-            date,
-            contestName,
-            contestType: contest?.type || "other"
-        });
+            const prob = candidates[idx];
+
+            cache.index = (idx + 1) % candidates.length;
+
+            return sendProblem(prob, res);
+        }
+
+        if (cache.queue.length === 0) {
+            cache.queue = shuffle([...candidates]).slice(0, 10);
+        }
+
+        const prob = cache.queue.shift();
+
+        cache.recent.push(`${prob.contestId}-${prob.index}`);
+        if (cache.recent.length > 20) cache.recent.shift();
+
+        return sendProblem(prob, res);
     } catch (e) {
         res.status(500).json({ error: e.message || "Unknown error" });
     }
