@@ -39,8 +39,13 @@ const avatarDiv = $(".avatar");
 const resultCard = $("#result");
 const probLink = $("#probLink");
 const probContestLink = $("#probContestLink");
-const AVATAR_DEBOUNCE_MS = 250;
+const minInput = $("#min");
+const maxInput = $("#max");
+const isTickedCheckbox = $("#is_ticked_checkbox");
+const tagCheckCheckbox = $("#tag_check_checkbox");
+const singleTagCheckbox = $("#single_tag_checkbox");
 
+const AVATAR_DEBOUNCE_MS = 250;
 
 let lastQuery = null;
 let avatarDebounceTimer = null;
@@ -116,9 +121,9 @@ const fetchRandom = async (query) => {
     params.set("max", query.max);
     params.set("match", "all");
 
-    query.is_ticked = $("#is_ticked_checkbox").checked;
-    query.tag_check = $("#tag_check_checkbox").checked;
-    query.single_tag = $("#single_tag_checkbox").checked;
+    query.is_ticked = isTickedCheckbox.checked;
+    query.tag_check = tagCheckCheckbox.checked;
+    query.single_tag = singleTagCheckbox.checked;
 
     params.set("single_tag", query.single_tag);
 
@@ -168,8 +173,8 @@ form.addEventListener("submit", ev => {
 
     if (!handle) return setStatus("Please enter a Codeforces handle.");
 
-    const min = +$("#min").value || 800;
-    const max = +$("#max").value || 3500;
+    const min = +minInput.value || 800;
+    const max = +maxInput.value || 3500;
 
     if (min > max) return setStatus("Min rating must be <= max rating.");
 
@@ -226,7 +231,6 @@ const loadAvatar = async (handle) => {
         const res = await fetchAvatarAPI(handle);
         const data = await res.json();
         const url = data?.avatarURL || "/default-avatar.png";
-
         const img = new Image();
 
         img.onload = () => {
@@ -298,8 +302,8 @@ const saveFilters = () => {
 }
 
 handleInput.addEventListener("input", saveFilters);
-$("#min").addEventListener("input", saveFilters);
-$("#max").addEventListener("input", saveFilters);
+minInput.addEventListener("input", saveFilters);
+maxInput.addEventListener("input", saveFilters);
 
 const loadFilters = () => {
     const raw = localStorage.getItem("cfRandomBasicFilters");
@@ -309,9 +313,8 @@ const loadFilters = () => {
         const data = JSON.parse(raw);
 
         if (data.handle) $("#handle").value = data.handle;
-        if (data.min) $("#min").value = data.min;
-        if (data.max) $("#max").value = data.max;
-
+        if (data.min) minInput.value = data.min;
+        if (data.max) maxInput.value = data.max;
     } catch (err) {
         console.error("Failed to load filters:", err);
     }

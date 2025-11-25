@@ -84,6 +84,11 @@ select:focus {
   color: #444444 !important;
 }
 
+#min, 
+#max {
+  border-color: #0000002a;
+}
+
 .cf_color {
   background: linear-gradient(135deg, #075eab, #0862af);
   -webkit-background-clip: text;

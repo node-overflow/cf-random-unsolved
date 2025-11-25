@@ -482,8 +482,16 @@ footer {
 
 @media (max-width: 768px) {
   .avatar,
-  toggleThemeBtn {
-    top: 8px;
+  #toggleThemeBtn {
+    top: 2px;
+  }
+
+  .avatar {
+    left: 1px;
+  }
+
+  #toggleThemeBtn {
+    right: 1px;
   }
 
   h1 {
