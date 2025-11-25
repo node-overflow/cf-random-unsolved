@@ -45,7 +45,10 @@ const isTickedCheckbox = $("#is_ticked_checkbox");
 const tagCheckCheckbox = $("#tag_check_checkbox");
 const singleTagCheckbox = $("#single_tag_checkbox");
 
+const TAG_CACHE_KEY = "cfTagCache";
+const TAG_CACHE_TTL = 24 * 60 * 60 * 1000;
 const AVATAR_DEBOUNCE_MS = 250;
+
 
 let lastQuery = null;
 let avatarDebounceTimer = null;
@@ -62,30 +65,54 @@ let avatarDebounceTimer = null;
 const loadTags = async () => {
     setStatus("Loading tags…");
 
+    const raw = localStorage.getItem(TAG_CACHE_KEY);
+
+    if (raw) {
+        try {
+            const cached = JSON.parse(raw);
+            const now = Date.now();
+
+            if (cached.timestamp && (now - cached.timestamp < TAG_CACHE_TTL)) {
+                renderTagItems(cached.tags);
+                setStatus("");
+                return;
+            }
+        } catch (_) { }
+    }
+
     try {
         const data = await fetchTagsAPI();
-        const availableTags = data.tags || [];
+        const tags = data.tags || [];
 
-        tagsBox.innerHTML = "";
+        localStorage.setItem(
+            TAG_CACHE_KEY,
+            JSON.stringify({ tags, timestamp: Date.now() })
+        );
 
-        availableTags.forEach(t => {
-            const div = document.createElement("div");
-
-            div.className = "tag-item";
-            div.textContent = t;
-            div.dataset.tag = t;
-
-            div.onclick = () => div.classList.toggle("selected");
-
-            tagsBox.appendChild(div);
-        });
-
+        renderTagItems(tags);
         setStatus("");
-    } catch (e) {
+    } catch (_) {
         setStatus("Could not load tags");
         tagsBox.textContent = "Unable to load tags.";
     }
 };
+
+const renderTagItems = (tags) => {
+    tagsBox.innerHTML = "";
+
+    tags.forEach(t => {
+        const div = document.createElement("div");
+
+        div.className = "tag-item";
+        div.textContent = t;
+        div.dataset.tag = t;
+
+        div.onclick = () => div.classList.toggle("selected");
+
+        tagsBox.appendChild(div);
+    });
+};
+
 
 loadTags();
 
