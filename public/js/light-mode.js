@@ -86,7 +86,8 @@ select:focus {
 
 #min, 
 #max {
-  border-color: #0000002a;
+  background: #d0d7dc7a;
+  border-color: #00000024;
 }
 
 .cf_color {
@@ -153,5 +154,9 @@ footer {
 
 .cf_i {
     color: #1e1e1e !important;
+}
+
+.checkBox {
+  opacity: 90%;
 }
 `;
