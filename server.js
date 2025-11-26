@@ -212,7 +212,11 @@ const matchesTags = (problemTags, selected, mode) => {
 
 const getServeCache = (handle) => {
     if (!serveCache.has(handle)) {
-        serveCache.set(handle, { recent: [], queue: [] });
+        serveCache.set(handle, {
+            reservoir: [],
+            index: 0,
+            lastSize: 0
+        });
     }
     return serveCache.get(handle);
 };
@@ -390,30 +394,20 @@ app.get("/api/random-problem", async (req, res) => {
 
         const cache = getServeCache(handle);
 
-        if (cache.lastCount !== candidates.length) {
+        if (cache.lastSize !== candidates.length || cache.reservoir.length === 0) {
+            cache.reservoir = shuffle([...candidates]);
             cache.index = 0;
-            cache.queue = [];
-            cache.lastCount = candidates.length;
+            cache.lastSize = candidates.length;
         }
 
-        if (candidates.length <= 10) {
-            const idx = cache.index || 0;
+        let prob = cache.reservoir[cache.index];
 
-            const prob = candidates[idx];
+        cache.index++;
 
-            cache.index = (idx + 1) % candidates.length;
-
-            return sendProblem(prob, res);
+        if (cache.index >= cache.reservoir.length) {
+            cache.reservoir = shuffle([...candidates]);
+            cache.index = 0;
         }
-
-        if (cache.queue.length === 0) {
-            cache.queue = shuffle([...candidates]).slice(0, 10);
-        }
-
-        const prob = cache.queue.shift();
-
-        cache.recent.push(`${prob.contestId}-${prob.index}`);
-        if (cache.recent.length > 20) cache.recent.shift();
 
         return sendProblem(prob, res);
     } catch (e) {
